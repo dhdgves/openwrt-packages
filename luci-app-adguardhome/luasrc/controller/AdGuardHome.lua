@@ -18,11 +18,7 @@ end
 function get_template_config()
 	local b
 	local d=""
-	local rcauto="/tmp/resolv.conf.auto"
-	if not fs.access(rcauto) then
-		rcauto="/tmp/resolv.conf.d/resolv.conf.auto"
-	end
-	for cnt in io.lines(rcauto) do
+	for cnt in io.lines("/tmp/resolv.conf.auto") do
 		b=string.match (cnt,"^[^#]*nameserver%s+([^%s]+)$")
 		if (b~=nil) then
 			d=d.."  - "..b.."\n"

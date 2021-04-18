@@ -8,16 +8,10 @@ require("table")
 function gen_template_config()
 	local b
 	local d=""
-	local rcauto="/tmp/resolv.conf.auto"
-	if not fs.access(rcauto) then
-		rcauto="/tmp/resolv.conf.d/resolv.conf.auto"
-	end
-	if fs.access(rcauto) then
-		for cnt in io.lines(rcauto) do
-			b=string.match (cnt,"^[^#]*nameserver%s+([^%s]+)$")
-			if (b~=nil) then
-				d=d.."  - "..b.."\n"
-			end
+	for cnt in io.lines("/tmp/resolv.conf.auto") do
+		b=string.match (cnt,"^[^#]*nameserver%s+([^%s]+)$")
+		if (b~=nil) then
+			d=d.."  - "..b.."\n"
 		end
 	end
 	local f=io.open("/usr/share/AdGuardHome/AdGuardHome_template.yaml", "r+")

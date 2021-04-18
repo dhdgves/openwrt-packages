@@ -37,12 +37,12 @@ else
 	local version=uci:get("AdGuardHome","AdGuardHome","version")
 	local testtime=fs.stat(binpath,"mtime")
 	if testtime~=tonumber(binmtime) or version==nil then
-		local tmp=luci.sys.exec(binpath.." --version 2>/dev/null | grep -m 1 -E '[0-9]+[.][0-9.]+' -o")
+		local tmp=luci.sys.exec(binpath.." -c /dev/null --check-config 2>&1| grep -m 1 -E 'v[0-9.]+' -o")
 		version=string.sub(tmp, 1, -2)
 		if version=="" then version="core error" end
 		uci:set("AdGuardHome","AdGuardHome","version",version)
 		uci:set("AdGuardHome","AdGuardHome","binmtime",testtime)
-		uci:commit("AdGuardHome")
+		uci:save("AdGuardHome")
 	end
 	e=version..e
 end
@@ -161,12 +161,7 @@ o = s:option(Flag, "verbose", translate("Verbose log"))
 o.default = 0
 o.optional = true
 ---- gfwlist 
-local a
-if fs.access(configpath) then
-a=luci.sys.call("grep -m 1 -q programadd "..configpath)
-else
-a=1
-end
+local a=luci.sys.call("grep -m 1 -q programadd "..configpath)
 if (a==0) then
 a="Added"
 else
@@ -303,7 +298,7 @@ function m.on_commit(map)
 				uci:set("AdGuardHome","AdGuardHome","ucitracktest","2")
 			end
 		end
-		uci:commit("AdGuardHome")
+		uci:save("AdGuardHome")
 	end
 end
 return m
