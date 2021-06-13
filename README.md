@@ -28,10 +28,12 @@
 ```bash
  git clone https://github.com/liuran001/openwrt-packages
 ```
-2. 或者添加下面代码到feeds.conf.default文件
+~~2. 或者添加下面代码到feeds.conf.default文件~~
 ```bash
  src-git liuran001_packages https://github.com/liuran001/openwrt-packages
 ```
+不建议使用，有部分包会找不到。
+
 3. 先cd进package目录，然后执行
 ```bash
  svn co https://github.com/liuran001/openwrt-packages/branches/packages
