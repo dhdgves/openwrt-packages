@@ -1,16 +1,6 @@
 # openwrt-packages
-国内常用OpenWrt软件包源码合集，每天自动更新，建议使用lean源码
+国内常用OpenWrt软件包源码合集，每天自动更新，使用lede。
 
-
-18.06版luci请使用packages分支
-
-
-19.07版luci请使用packages-19.07分支
-
-`lean源码用主分支，op官方源码用packages-19.07`
-
-## 有问题请发issue，我不上恩山的！！！
-请求加入xxx软件包/问题反馈也请使用issue
 
 ### 更新日志
 `2021/3/13`
