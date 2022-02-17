@@ -4,8 +4,8 @@ local openclash = "openclash"
 local uci = luci.model.uci.cursor()
 local fs = require "luci.openclash"
 
-font_red = [[<font color="red">]]
-font_off = [[</font>]]
+font_red = [[<b style=color:red>]]
+font_off = [[</b>]]
 bold_on  = [[<strong>]]
 bold_off = [[</strong>]]
 
@@ -39,6 +39,7 @@ o = s:option(DynamicList, "new_servers_group", translate("New Servers Group"))
 o.description = translate("Set The New Subscribe Server's Default Proxy Groups")
 o.rmempty = true
 o:depends("servers_update", 1)
+o:value("all", translate("All Groups"))
 m.uci:foreach("openclash", "groups",
 		function(s)
 			o:value(s.name)
@@ -162,9 +163,9 @@ end
 o = s:option(DummyValue, "udp", translate("UDP Support"))
 function o.cfgvalue(...)
 	if Value.cfgvalue(...) == "true" then
-		return translate("支持")
+		return translate("Enable")
 	elseif Value.cfgvalue(...) == "false" then
-		return translate("不支持")
+		return translate("Disable")
 	else
 		return translate("None")
 	end
@@ -201,7 +202,7 @@ o.write = function()
 end
 
 o = b:option(Button,"Delete_Proxy_Provider", " ")
-o.inputtitle = translate("Delete Proxy Provider")
+o.inputtitle = translate("Delete Proxy Providers")
 o.inputstyle = "reset"
 o.write = function()
   m.uci:set("openclash", "config", "enable", 0)
@@ -227,7 +228,7 @@ local t = {
 a = m:section(Table, t)
 
 o = a:option(Button,"Load_Config", " ")
-o.inputtitle = translate("Load Config")
+o.inputtitle = translate("Read Config")
 o.inputstyle = "apply"
 o.write = function()
   m.uci:set("openclash", "config", "enable", 0)
@@ -237,7 +238,7 @@ o.write = function()
 end
 
 o = a:option(Button, "Commit", " ") 
-o.inputtitle = translate("Commit Configurations")
+o.inputtitle = translate("Commit Settings")
 o.inputstyle = "apply"
 o.write = function()
 	fs.unlink("/tmp/Proxy_Group")
@@ -246,7 +247,7 @@ o.write = function()
 end
 
 o = a:option(Button, "Apply", " ")
-o.inputtitle = translate("Apply Configurations")
+o.inputtitle = translate("Apply Settings")
 o.inputstyle = "apply"
 o.write = function()
 	fs.unlink("/tmp/Proxy_Group")

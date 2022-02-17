@@ -110,6 +110,9 @@ _docker.clear_empty_tables = function ( t )
 		for k, v in pairs(t) do
 			if type(v) == 'table' then
 				t[k] = _docker.clear_empty_tables(v)
+				if t[k] and next(t[k]) == nil then
+					t[k] = nil
+				end
 			end
 		end
 	end
@@ -215,16 +218,9 @@ local upgrade = function(self, request)
 		return {code = 305, body = {message = "Already up to date"}}
 	end
 
-	_docker:append_status("Container: " .. "Stop" .. " " .. container_name .. "...")
-	res = self.containers:stop({name = container_name})
-	if res and res.code and res.code < 305 then
-		_docker:append_status("done\n")
-	else
-		return res
-	end
-
-	_docker:append_status("Container: rename" .. " " .. container_name .. " to ".. container_name .. "_old ...")
-	res = self.containers:rename({name = container_name, query = { name = container_name .. "_old" }})
+	local t = os.date("%Y%m%d%H%M%S")
+	_docker:append_status("Container: rename" .. " " .. container_name .. " to ".. container_name .. "_old_".. t .. "...")
+	res = self.containers:rename({name = container_name, query = { name = container_name .. "_old_" ..t }})
 	if res and res.code and res.code < 300 then
 		_docker:append_status("done\n")
 	else
@@ -251,6 +247,22 @@ local upgrade = function(self, request)
 			return res
 		end
 		_docker:append_status("done\n")
+	end
+
+	_docker:append_status("Container: " .. "Stop" .. " " .. container_name .. "_old_".. t .. "...")
+	res = self.containers:stop({name = container_name .. "_old_" ..t })
+	if res and res.code and res.code < 305 then
+		_docker:append_status("done\n")
+	else
+		return res
+	end
+
+	_docker:append_status("Container: " .. "Start" .. " " .. container_name .. "...")
+	res = self.containers:start({name = container_name})
+	if res and res.code and res.code < 305 then
+		_docker:append_status("done\n")
+	else
+		return res
 	end
 
 	_docker:clear_status()
@@ -478,6 +490,18 @@ _docker.remove_macvlan_interface = function(name)
 	uci:commit("firewall")
 
 	os.execute("ip link del " .. if_name)
+end
+
+_docker.byte_format = function (byte)
+	if not byte then return 'NaN' end
+	local suff = {"B", "KB", "MB", "GB", "TB"}
+	for i=1, 5 do
+		if byte > 1024 and i < 5 then
+			byte = byte / 1024
+		else
+			return string.format("%.2f %s", byte, suff[i])
+		end
+	end
 end
 
 return _docker
